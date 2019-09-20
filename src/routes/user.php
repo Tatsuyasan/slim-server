@@ -1,16 +1,15 @@
 <?php
 
+
 /**
- * POST loginUser
- * Summary: Logs user into the system
+ * GET getAllRentersOfOwner
+ * Summary: get renters by owner id
  * Notes:
- * Output-Formats: [application/json]
  */
-$app->POST('/v2/login', function ($request, $response, $args) {
+$app->GET('/v2/getRentersByOwnerId/{id}', function ($request, $response, $args) {
 
 
-    $body = $request->getParsedBody();
-    $response->write('How about implementing loginUser as a POST method ?');
+    $response->write('How about implementing getAllRentersOfOwner as a GET method ?');
     return $response;
 });
 
