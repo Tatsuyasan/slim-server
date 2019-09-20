@@ -1,13 +1,13 @@
 <?php
 /*
- * Loggin
+ * Login
  */
 namespace \Models;
 
 /*
- * Loggin
+ * Login
  */
-class Loggin {
+class Login {
     /* @var string $email  */
     private $email;
 /* @var string $password  */
