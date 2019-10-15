@@ -7,11 +7,16 @@
  * Output-Formats: [application/json]
  */
 $app->POST('/v2/property', function ($request, $response, $args) {
-
-
-    $body = $request->getParsedBody();
-    $response->write('How about implementing createProperty as a POST method ?');
-    return $response;
+    try {
+        $dataRequest = $request->getParsedBody();
+        $insertStatement = $this->db->insert(array_keys($dataRequest))
+            ->into('property')
+            ->values(array_values($dataRequest));
+        $insertId = $insertStatement->execute(true);
+        return $response->withJson(['message' => 'Property number ' . $insertId . ' is create'], 201);
+    } catch (Exception $e) {
+        return $response->withJson(['message' => 'An error is occured'], 404);
+    }
 });
 
 
@@ -21,11 +26,16 @@ $app->POST('/v2/property', function ($request, $response, $args) {
  * Notes:
  * Output-Formats: [application/json]
  */
-$app->DELETE('/v2/property/{userId}', function ($request, $response, $args) {
+$app->DELETE('/v2/property/{id}', function ($request, $response, $args) {
+    //todo : delete property by id property, but don't forget to delete id_renter on property. (may be another routes in user).
+    $deleteStatement = $this->db->delete()
+        ->from('property')
+        ->where('id', '=', $args['id']);
+    $affectedRows = $deleteStatement->execute();
+    if ($affectedRows)
+        return $response->withJson(['message' => 'User is delete'], 200);
 
-
-    $response->write('How about implementing deleteProperty as a DELETE method ?');
-    return $response;
+    return $response->withJson(['message' => 'An error is occured'], 404);
 });
 
 
@@ -36,9 +46,17 @@ $app->DELETE('/v2/property/{userId}', function ($request, $response, $args) {
  * Output-Formats: [application/json]
  */
 $app->GET('/v2/property/{userId}', function ($request, $response, $args) {
-
-
-    $response->write('How about implementing getAllPropertyByUserId as a GET method ?');
+    $sth = $this->db->prepare('
+SELECT p.*
+FROM `user` u
+JOIN `property` p ON u.id = p.id_owner
+WHERE p.id_owner = :userId');
+    $sth->bindParam(':userId', $args['userId'], PDO::PARAM_INT);
+    $sth->execute();
+    $data = $sth->fetchAll();
+    $response = $response->withJson($data);
+    if (empty($data))
+        return $response->withJson(['message' => 'User(s) not found'], 404);
     return $response;
 });
 
@@ -50,10 +68,18 @@ $app->GET('/v2/property/{userId}', function ($request, $response, $args) {
  * Output-Formats: [application/json]
  */
 $app->PUT('/v2/property', function ($request, $response, $args) {
+    $dataRequest = $request->getParsedBody();
 
+    if (!isset($dataRequest['id']))
+        return $response->withJson(['message' => 'Property\'s ID is required'], 404);
 
-    $body = $request->getParsedBody();
-    $response->write('How about implementing updatePropertyById as a PUT method ?');
-    return $response;
+    $updateStatement = $this->db->update($dataRequest)
+        ->table('property')
+        ->where('id', '=', $dataRequest['id']);
+    $affectedRows = $updateStatement->execute();
+    if ($affectedRows)
+        return $response->withJson(['message' => 'Property is update'], 200);
+
+    return $response->withJson(['message' => 'Property not found or no update data'], 404);
 });
 

@@ -9,10 +9,20 @@
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-$app->GET('/v2/getRentersByOwnerId/{id}', function ($request, $response, $args) {
-
-
-    $response->write('How about implementing getAllRentersOfOwner as a GET method ?');
+$app->GET('/v2/getRentersByOwnerId/{idOwner}', function (Request $request, Response $response, $args) {
+    $sth = $this->db->prepare('
+SELECT ur.*
+FROM `user` u 
+JOIN `property` p ON u.id = p.id_owner
+JOIN `rent` r ON p.id = r.id_property
+JOIN `user` ur ON r.id_renter = ur.id
+WHERE ur.type_user = 2 AND p.id_owner = :idOwner');
+    $sth->bindParam(':idOwner', $args['idOwner'], PDO::PARAM_INT);
+    $sth->execute();
+    $data = $sth->fetchAll();
+    $response = $response->withJson($data);
+    if (empty($data))
+        return $response->withJson(['message' => 'User(s) not found'], 404);
     return $response;
 });
 
@@ -27,7 +37,7 @@ $app->POST('/v2/user', function (Request $request, Response $response) {
     try {
         $dataRequest = $request->getParsedBody();
         $insertStatement = $this->db->insert(array_keys($dataRequest))
-            ->into('users')
+            ->into('user')
             ->values(array_values($dataRequest));
         $insertId = $insertStatement->execute(true);
         return $response->withJson(['message' => 'User number ' . $insertId . ' is create'], 201);
@@ -44,9 +54,9 @@ $app->POST('/v2/user', function (Request $request, Response $response) {
  * Notes: This can only be done by the logged in user.
  * Output-Formats: [application/json]
  */
-$app->DELETE('/v2/user/{id}', function (Response $response, $args) {
+$app->DELETE('/v2/user/{id}', function (Request $request, Response $response, $args) {
     $deleteStatement = $this->db->delete()
-        ->from('users')
+        ->from('user')
         ->where('id', '=', $args['id']);
     $affectedRows = $deleteStatement->execute();
     if ($affectedRows)
@@ -62,7 +72,7 @@ $app->DELETE('/v2/user/{id}', function (Response $response, $args) {
  * Notes:
  * Output-Formats: [application/json]
  */
-$app->GET('/v2/user/getDashboardInfoById/{id}', function ($request, $response, $args) {
+$app->GET('/v2/user/getDashboardInfoById/{id}', function (Request $request, Response $response, $args) {
 
 
     $response->write('How about implementing getDashboardInfoById as a GET method ?');
@@ -76,9 +86,9 @@ $app->GET('/v2/user/getDashboardInfoById/{id}', function ($request, $response, $
  * Notes:
  * Output-Formats: [application/json]
  */
-$app->GET('/v2/user/{id}', function (Response $response, $args) {
+$app->GET('/v2/user/{id}', function (Request $request, Response $response, $args) {
     $selectStatement = $this->db->select()
-        ->from('users')
+        ->from('user')
         ->where('id', '=', $args['id']);
     $stmt = $selectStatement->execute();
     $data = $stmt->fetch();
@@ -104,7 +114,7 @@ $app->PUT('/v2/user', function (Request $request, Response $response) {
         return $response->withJson(['message' => 'User\'s ID is required'], 404);
 
     $updateStatement = $this->db->update($dataRequest)
-        ->table('users')
+        ->table('user')
         ->where('id', '=', $dataRequest['id']);
     $affectedRows = $updateStatement->execute();
     if ($affectedRows)
