@@ -6,10 +6,7 @@
  * Notes:
  */
 
-use Slim\Http\Request;
-use Slim\Http\Response;
-
-$app->GET('/v2/getRentersByOwnerId/{idOwner}', function (Request $request, Response $response, $args) {
+$app->GET('/v2/getRentersByOwnerId/{idOwner}', function ($request, $response, $args) {
     $sth = $this->db->prepare('
 SELECT ur.*
 FROM `user` u 
@@ -33,7 +30,7 @@ WHERE ur.type_user = 2 AND p.id_owner = :idOwner');
  * Notes: This can only be done by the logged in user.
  * Output-Formats: [application/json]
  */
-$app->POST('/v2/user', function (Request $request, Response $response) {
+$app->POST('/v2/user', function ($request, $response) {
     try {
         $dataRequest = $request->getParsedBody();
         $insertStatement = $this->db->insert(array_keys($dataRequest))
@@ -54,7 +51,7 @@ $app->POST('/v2/user', function (Request $request, Response $response) {
  * Notes: This can only be done by the logged in user.
  * Output-Formats: [application/json]
  */
-$app->DELETE('/v2/user/{id}', function (Request $request, Response $response, $args) {
+$app->DELETE('/v2/user/{id}', function ($request, $response, $args) {
     $deleteStatement = $this->db->delete()
         ->from('user')
         ->where('id', '=', $args['id']);
@@ -72,7 +69,7 @@ $app->DELETE('/v2/user/{id}', function (Request $request, Response $response, $a
  * Notes:
  * Output-Formats: [application/json]
  */
-$app->GET('/v2/user/getDashboardInfoById/{id}', function (Request $request, Response $response, $args) {
+$app->GET('/v2/user/getDashboardInfoById/{id}', function ($request, $response, $args) {
 
 
     $response->write('How about implementing getDashboardInfoById as a GET method ?');
@@ -86,7 +83,7 @@ $app->GET('/v2/user/getDashboardInfoById/{id}', function (Request $request, Resp
  * Notes:
  * Output-Formats: [application/json]
  */
-$app->GET('/v2/user/{id}', function (Request $request, Response $response, $args) {
+$app->GET('/v2/user/{id}', function ($request, $response, $args) {
     $selectStatement = $this->db->select()
         ->from('user')
         ->where('id', '=', $args['id']);
@@ -107,7 +104,7 @@ $app->GET('/v2/user/{id}', function (Request $request, Response $response, $args
  * Notes: This can only be done by the logged in user.
  * Output-Formats: [application/json]
  */
-$app->PUT('/v2/user', function (Request $request, Response $response) {
+$app->PUT('/v2/user', function ($request, $response) {
     $dataRequest = $request->getParsedBody();
 
     if (!isset($dataRequest['id']))

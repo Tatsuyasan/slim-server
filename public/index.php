@@ -17,6 +17,7 @@ $settings = require '../config/dependencies.php';
 // create app instance
 $app = new App($container);
 
+require '../src/routes/doc.php';
 require '../src/routes/user.php';
 require '../src/routes/property.php';
 require '../src/routes/login.php';

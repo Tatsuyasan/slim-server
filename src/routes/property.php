@@ -26,7 +26,27 @@ $app->POST('/v2/property', function ($request, $response, $args) {
  * Notes:
  * Output-Formats: [application/json]
  */
-$app->DELETE('/v2/property/{id}', function ($request, $response, $args) {
+$app->DELETE('/v2/property/{id}', function ($request, Response $response, $args) {
+    /**
+     * Query database table
+     *
+     * @return Response
+     *
+     * @SWG\Get(
+     *     path="/api/sample",
+     *     description="Returns entries in table.",
+     *     produces={"application/json"},
+     *     tags={"Sample"},
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @SWG\Response(
+     *         response=401,
+     *         description="Unauthorized action.",
+     *     )
+     * )
+     */
     //todo : delete property by id property, but don't forget to delete id_renter on property. (may be another routes in user).
     $deleteStatement = $this->db->delete()
         ->from('property')
