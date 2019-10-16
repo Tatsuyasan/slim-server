@@ -13,7 +13,8 @@ $app->POST('/v2/property', function ($request, $response, $args) {
             ->into('property')
             ->values(array_values($dataRequest));
         $insertId = $insertStatement->execute(true);
-        return $response->withJson(['message' => 'Property number ' . $insertId . ' is create'], 201);
+        $dataRequest['id'] = $insertId;
+        return $response->withJson(json_decode(json_encode(($dataRequest))), 201);
     } catch (Exception $e) {
         return $response->withJson(['message' => 'An error is occured'], 404);
     }

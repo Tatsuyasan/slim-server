@@ -20,4 +20,5 @@ $app = new App($container);
 require '../src/routes/user.php';
 require '../src/routes/property.php';
 require '../src/routes/login.php';
+require '../src/routes/request.php';
 $app->run();

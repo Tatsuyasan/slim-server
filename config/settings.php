@@ -5,7 +5,7 @@ return $settings = [
 
         'db' => [
             "host" => "localhost",
-            "dbname" => "ownerandrenter",
+            "dbname" => "owner_and_renter",
             "user" => "root",
             "pass" => ""
         ],
